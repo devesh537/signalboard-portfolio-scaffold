@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/<your-username>/signalboard.git
+    repoURL: https://github.com/devesh537/signalboard-portfolio-scaffold.git
     targetRevision: main
     path: gitops/overlays/dev
   destination:
