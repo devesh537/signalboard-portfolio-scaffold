@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: signalboard_user
+      POSTGRES_PASSWORD: signalboard_pass
+      POSTGRES_DB: signalboard_db
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./app/backend
+    environment:
+      PORT: 5000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: signalboard_user
+      DB_PASSWORD: signalboard_pass
+      DB_NAME: signalboard_db
+      DB_POOL_MAX: 10
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./app/frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend

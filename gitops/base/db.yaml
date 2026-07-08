@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signalboard-db
+  namespace: signalboard
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: signalboard-db
+  template:
+    metadata:
+      labels:
+        app: signalboard-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: signalboard-db-secret
+          resources:
+            requests: { cpu: 250m, memory: 256Mi }
+            limits: { cpu: 500m, memory: 512Mi }
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "signalboard_user"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "signalboard_user"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: signalboard-db
+  namespace: signalboard
+spec:
+  selector:
+    app: signalboard-db
+  ports:
+    - port: 5432
+      targetPort: 5432

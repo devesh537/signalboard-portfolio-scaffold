@@ -1,0 +1,58 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: signalboard-alert-rules
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: signalboard-slo-burn-rate
+      rules:
+        - alert: SignalboardErrorBudgetFastBurn
+          expr: |
+            (
+              sum(rate(http_requests_total{job="signalboard-backend",code=~"5.."}[5m]))
+              /
+              sum(rate(http_requests_total{job="signalboard-backend"}[5m]))
+            ) > (14.4 * 0.005)
+          for: 2m
+          labels:
+            severity: page
+          annotations:
+            summary: "Fast error-budget burn on signalboard-backend"
+            description: "99.5% availability SLO burning >14x normal rate. See README > SRE practices > runbook."
+
+        - alert: SignalboardErrorBudgetSlowBurn
+          expr: |
+            (
+              sum(rate(http_requests_total{job="signalboard-backend",code=~"5.."}[6h]))
+              /
+              sum(rate(http_requests_total{job="signalboard-backend"}[6h]))
+            ) > (6 * 0.005)
+          for: 15m
+          labels:
+            severity: ticket
+          annotations:
+            summary: "Slow error-budget burn on signalboard-backend"
+
+        - alert: SignalboardBackendHighLatency
+          expr: |
+            histogram_quantile(0.95,
+              sum(rate(http_request_duration_seconds_bucket{job="signalboard-backend"}[5m])) by (le)
+            ) > 0.3
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "p95 latency above 300ms on signalboard-backend"
+
+        - alert: SignalboardDBConnectionsNearMax
+          expr: |
+            pg_stat_activity_count{datname="signalboard_db"}
+            / on() pg_settings_max_connections > 0.8
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Postgres connections above 80% of max_connections"

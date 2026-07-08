@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-allow-backend-only
+  namespace: signalboard
+spec:
+  podSelector:
+    matchLabels: { app: signalboard-db }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: { matchLabels: { app: signalboard-backend } }
+      ports:
+        - port: 5432
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-allow-frontend-only
+  namespace: signalboard
+spec:
+  podSelector:
+    matchLabels: { app: signalboard-backend }
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: { matchLabels: { app: signalboard-frontend } }
+      ports:
+        - port: 5000

@@ -1,0 +1,21 @@
+{
+  "name": "signalboard-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "lint": "eslint src",
+    "test": "node --test src/**/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.11.5",
+    "prom-client": "^15.1.3",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
+}
