@@ -6,7 +6,7 @@ resources:
 patchesStrategicMerge:
   - db-pool-patch.yaml
 images:
-  - name: ghcr.io/OWNER/signalboard/backend
+  - name: ghcr.io/devesh537/signalboard-backend
     newTag: latest
-  - name: ghcr.io/OWNER/signalboard/frontend
+  - name: ghcr.io/devesh537/signalboard-frontend
     newTag: latest
