@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/devesh537/signalboard-frontend:latest
+          image: ghcr.io/devesh537/signalboard-backend:latest
           ports:
             - containerPort: 5000
           env:
